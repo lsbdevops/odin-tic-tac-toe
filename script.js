@@ -11,19 +11,35 @@ const gameBoard = function() {
 
     const addPlayerMove = (playerSymbol, column, row) => {
         // Check if the move is valid by confirming the cell is empty.
-        if (!board[column][row]) {
-            board[column][row] = playerSymbol;
+        if (!board[row][column]) {
+            board[row][column] = playerSymbol;
         }
     }
 
-    return {board, getBoard, addPlayerMove};
+    const printBoard = () => {
+        for (let rowN = 0; rowN < 3; rowN++) {
+            for (let columnN = 0; columnN < 3; columnN++)
+            {
+                // Get the gameboard cell for the associated row/column numbers. Add 1 to account for zero indexing of array.
+                const cell = document.querySelector(`.cell[data-row="${rowN+1}"][data-column="${columnN+1}"]`);
+                cell.textContent = board[rowN][columnN];
+            }
+        }
+    }
+
+    return {board, getBoard, addPlayerMove, printBoard};
 }()
 
+
 function createPlayer(name, symbol) {
+    let score = 0;
+
     const getName = () => name;
     const getSymbol = () => symbol;
+    const incrementScore = () => score++;
+    const getScore = () => score;
 
-    return {getName, getSymbol};
+    return {getName, getSymbol, incrementScore, getScore};
 }
 
 function gameController(playerOneName = "Player One", playerTwoName = "Player Two") {
