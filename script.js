@@ -50,10 +50,13 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
 
     // Set initial player's turn.
     let activePlayer = playerOne;
+    let turnDisplay = document.querySelector("#turn");
+    turnDisplay.textContent = `${activePlayer.getName()} (${activePlayer.getSymbol()})`;
 
     // Change the active player.
     const changePlayerTurn = () => {
         activePlayer = (activePlayer === playerOne) ? playerTwo : playerOne;
+        turnDisplay.textContent = `${activePlayer.getName()} (${activePlayer.getSymbol()})`;
     }
 
     const getActivePlayer = () => activePlayer;
@@ -80,3 +83,4 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
 }
 
 const game = gameController();
+game.playRound();
