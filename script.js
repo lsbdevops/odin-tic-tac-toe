@@ -28,7 +28,7 @@ const gameBoard = function() {
         }
     }
 
-    return {addPlayerMove, printBoard};
+    return {addPlayerMove, printBoard, getBoard};
 }()
 
 
@@ -68,15 +68,59 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
         cellList.forEach((cell) => {
             cell.addEventListener("click", () => {
                 // Add symbol of active player to the clicked cell. Mins 1 to account for zero indexing of array.
-                gameBoard.addPlayerMove(getActivePlayer().getSymbol(), cell.dataset.column - 1, cell.dataset.row - 1);
+                const playerSymbol = getActivePlayer().getSymbol();
+                gameBoard.addPlayerMove(playerSymbol, cell.dataset.column - 1, cell.dataset.row - 1);
 
                 // Re-print the game board to render the player's selection.
                 gameBoard.printBoard();
+                
+                // Check if the active player has won.
+                if (checkForWinner(playerSymbol)) {
+                    console.log(`${getActivePlayer().getName()} wins!`)
+                    getActivePlayer().incrementScore;
+                };
 
                 // Change the active player.
                 changePlayerTurn();
             })
         })
+    }
+
+    const checkForWinner = (playerSymbol) => {
+        let isWinner = false;
+        const currentBoard = gameBoard.getBoard();
+
+        const isThreeInRow = (currentSymbol) => currentSymbol === playerSymbol;
+
+        // Check for winner in rows and diagonal.
+        diagonalArray1 = [];
+        diagonalArray2 = [];
+        for (let row = 0; row < 3; row++) {
+            if (currentBoard[row].every(isThreeInRow)) {
+                isWinner = true;
+            }
+
+            diagonalArray1.push(currentBoard[row][row]);
+            diagonalArray2.push(currentBoard[row][2 - row]);
+        }
+
+        if (diagonalArray1.every(isThreeInRow) || diagonalArray2.every(isThreeInRow)) {
+            isWinner = true;
+        }
+
+        // Check for winner in columns.
+        for (let column = 0; column < 3; column++) {
+            const columnArray = [];
+            for (let row = 0; row < 3; row++) {
+                columnArray.push(currentBoard[row][column]);
+            }
+
+            if (columnArray.every(isThreeInRow)) {
+                isWinner = true;
+            }
+        }
+
+        return isWinner;
     }
 
     return {playRound};
