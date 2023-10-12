@@ -3,9 +3,9 @@ const gameBoard = function() {
 
     /* Create board as a 2d array - this will  allow any cell to be 
      identified by board[column][row] */
-    const board =  [["X", "O", "X"],
-                    ["O", "", "X"],
-                    ["X", "X", "O"]];
+    const board =  [["", "", ""],
+                    ["", "", ""],
+                    ["", "", ""]];
 
     const getBoard = () => board;
 
@@ -17,6 +17,7 @@ const gameBoard = function() {
     }
 
     const printBoard = () => {
+        // Loop for each cell of the 3x3 grid.
         for (let rowN = 0; rowN < 3; rowN++) {
             for (let columnN = 0; columnN < 3; columnN++)
             {
@@ -27,7 +28,7 @@ const gameBoard = function() {
         }
     }
 
-    return {board, getBoard, addPlayerMove, printBoard};
+    return {addPlayerMove, printBoard};
 }()
 
 
@@ -47,5 +48,35 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
     const playerOne = createPlayer(playerOneName, "O");
     const playerTwo = createPlayer(playerTwoName, "X");
 
-    return {playerOne, playerTwo};
+    // Set initial player's turn.
+    let activePlayer = playerOne;
+
+    // Change the active player.
+    const changePlayerTurn = () => {
+        activePlayer = (activePlayer === playerOne) ? playerTwo : playerOne;
+    }
+
+    const getActivePlayer = () => activePlayer;
+
+    const playRound = () => {
+        // Get list of all cells and add a click event listener to each.
+        const cellList = document.querySelectorAll(".cell");
+
+        cellList.forEach((cell) => {
+            cell.addEventListener("click", () => {
+                // Add symbol of active player to the clicked cell. Mins 1 to account for zero indexing of array.
+                gameBoard.addPlayerMove(getActivePlayer().getSymbol(), cell.dataset.column - 1, cell.dataset.row - 1);
+
+                // Re-print the game board to render the player's selection.
+                gameBoard.printBoard();
+
+                // Change the active player.
+                changePlayerTurn();
+            })
+        })
+    }
+
+    return {playRound};
 }
+
+const game = gameController();
