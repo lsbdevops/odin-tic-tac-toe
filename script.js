@@ -13,7 +13,12 @@ const gameBoard = function() {
         // Check if the move is valid by confirming the cell is empty.
         if (!board[row][column]) {
             board[row][column] = playerSymbol;
+
+            // Confirm valid move has been made.
+            return true;
         }
+
+        return false;
     }
 
     const printBoard = () => {
@@ -67,9 +72,15 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
 
         cellList.forEach((cell) => {
             cell.addEventListener("click", () => {
-                // Add symbol of active player to the clicked cell. Mins 1 to account for zero indexing of array.
+                // Add symbol of active player to the clicked cell. Minus 1 to account for zero indexing of array.
                 const playerSymbol = getActivePlayer().getSymbol();
-                gameBoard.addPlayerMove(playerSymbol, cell.dataset.column - 1, cell.dataset.row - 1);
+                let isMoveValid = false;
+
+                // Confirm player's move is valid before continuing.
+                isMoveValid = gameBoard.addPlayerMove(playerSymbol, cell.dataset.column - 1, cell.dataset.row - 1);
+                if (!isMoveValid) {
+                   return;
+                }
 
                 // Re-print the game board to render the player's selection.
                 gameBoard.printBoard();
