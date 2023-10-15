@@ -48,20 +48,24 @@ function createPlayer(name, symbol) {
     return {getName, getSymbol, incrementScore, getScore};
 }
 
-function gameController(playerOneName = "Player One", playerTwoName = "Player Two") {
+function gameController(playerOneName, playerTwoName) {
     // Create the players.
-    const playerOne = createPlayer(playerOneName, "O");
-    const playerTwo = createPlayer(playerTwoName, "X");
+    const playerOne = createPlayer(playerOneName, "X");
+    const playerTwo = createPlayer(playerTwoName, "O");
+
+    // Render player names on the webpage.
+    document.querySelector("#p1-name").textContent = playerOne.getName();
+    document.querySelector("#p2-name").textContent = playerTwo.getName();
 
     // Set initial player's turn.
     let activePlayer = playerOne;
     let turnDisplay = document.querySelector("#turn");
-    turnDisplay.textContent = `${activePlayer.getName()} (${activePlayer.getSymbol()})`;
 
     // Change the active player.
     const changePlayerTurn = () => {
         activePlayer = (activePlayer === playerOne) ? playerTwo : playerOne;
-        turnDisplay.textContent = `${activePlayer.getName()} (${activePlayer.getSymbol()})`;
+        document.querySelector(".player-one").classList.toggle("active");
+        document.querySelector(".player-two").classList.toggle("active");
     }
 
     const getActivePlayer = () => activePlayer;
@@ -95,11 +99,12 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
                 if (isWinner) {
                     printWinner(player.getName(), winningArray);
                     player.incrementScore();
-                    removeListeners.abort()
+                    printScores();
+                    removeListeners.abort();
                 }
                 else if (checkForDraw()) {
                     printDraw();
-                    removeListeners.abort()
+                    removeListeners.abort();
                 }
                 else {
                     // Change the active player to continue the round.
@@ -180,8 +185,38 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
         document.querySelector("#winner").textContent = "Round Drawn!"
     }
 
+    const printScores = () => {
+        document.querySelector("#p1-score").textContent = playerOne.getScore();
+        document.querySelector("#p2-score").textContent = playerOne.getScore();
+    }
+
     return {playRound};
 }
 
-const game = gameController();
-game.playRound();
+function startGame() {
+    const dialogElement = document.querySelector("#player-info");
+    const playButton = document.querySelector("#play");
+    const playerNames = {};
+
+    dialogElement.showModal();
+
+    playButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        playerNames["playerOneName"] = document.querySelector("#name-player-one").value; 
+        playerNames["playerTwoName"] = document.querySelector("#name-player-two").value;
+        dialogElement.close();
+
+        // Set default names.
+        if (!playerNames.playerOneName) {
+            playerNames.playerOneName = "Player One";
+        }
+        if (!playerNames.playerTwoName) {
+            playerNames.playerTwoName = "Player Two";
+        }
+
+        const game = gameController(playerNames.playerOneName, playerNames.playerTwoName);
+        game.playRound();
+    })
+}
+
+startGame();

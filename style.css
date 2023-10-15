@@ -70,10 +70,23 @@ body {
 
 .player-one {
     grid-column: 1 / span 1;
-    box-shadow: 5px 0px 10px #22d3ee, inset -5px 0px 10px #c084fc;
+    box-shadow: 15px 0px 20px #22d3ee, inset -15px 0px 20px #c084fc;
 }
 
 .player-two {
     grid-column: 3 / span 1;
-    box-shadow: -5px 0px 10px #22d3ee, inset 5px 0px 10px #c084fc;;
+    box-shadow: -15px 0px 20px #22d3ee, inset 15px 0px 20px #c084fc;;
+}
+
+form > ul {
+    list-style: none;
+}
+
+.active {
+    outline: 3px solid #67e8f9;
+    background-color: #f43f5e;
+}
+
+#winner {
+    grid-column: 1 / span 3;
 }
