@@ -91,8 +91,9 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
                 gameBoard.printBoard();
                 
                 // Check if the active player has won.
-                if (checkForWinner(playerSymbol)) {
-                    printWinner(player.getName());
+                const [isWinner, winningArray] = checkForWinner(playerSymbol);
+                if (isWinner) {
+                    printWinner(player.getName(), winningArray);
                     player.incrementScore();
                     removeListeners.abort()
                 }
@@ -109,40 +110,51 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
     }
 
     const checkForWinner = (playerSymbol) => {
-        let isWinner = false;
+        const winningArray = [];
         const currentBoard = gameBoard.getBoard();
 
         const isThreeInRow = (currentSymbol) => currentSymbol === playerSymbol;
 
-        // Check for winner in rows and diagonal.
-        diagonalArray1 = [];
-        diagonalArray2 = [];
-        for (let row = 0; row < 3; row++) {
-            if (currentBoard[row].every(isThreeInRow)) {
-                isWinner = true;
+        // Declare arrays to store checks for diagonal win conditions.
+        diagonalArrayLR = [];
+        diagonalArrayRL = [];
+        for (let i = 0; i < 3; i++) {
+            // Check for winner in row number i.
+            if (currentBoard[i].every(isThreeInRow)) {
+                // Get coordinates of winning cells (in row).
+                for (let j = 0; j < 3; j++) {
+                    winningArray.push([i, j])
+                }
+                return [true, winningArray];
             }
 
-            diagonalArray1.push(currentBoard[row][row]);
-            diagonalArray2.push(currentBoard[row][2 - row]);
-        }
-
-        if (diagonalArray1.every(isThreeInRow) || diagonalArray2.every(isThreeInRow)) {
-            isWinner = true;
-        }
-
-        // Check for winner in columns.
-        for (let column = 0; column < 3; column++) {
+            // Check for winner in column number i.
             const columnArray = [];
-            for (let row = 0; row < 3; row++) {
-                columnArray.push(currentBoard[row][column]);
+            for (let j = 0; j < 3; j++) {
+                columnArray.push(currentBoard[j][i]);
+            }
+            if (columnArray.every(isThreeInRow)) {
+                // Get coordinates of winning cells (in column).
+                for (let k = 0; k < 3; k++) {
+                    winningArray.push([k, i]);
+                }
+                return [true, winningArray];
             }
 
-            if (columnArray.every(isThreeInRow)) {
-                isWinner = true;
-            }
+            diagonalArrayLR.push(currentBoard[i][i]);
+            diagonalArrayRL.push(currentBoard[i][2 - i]);
         }
 
-        return isWinner;
+        // Check diagonal conditions for winner - return the coordinates of winning diagonal.
+        if (diagonalArrayLR.every(isThreeInRow)) {
+            return [true, [[0,0], [1,1], [2,2]]]
+        }
+        if (diagonalArrayRL.every(isThreeInRow)) {
+            return [true, [[0,2], [1,1], [2,0]]]
+        }
+
+        // If there is no winner.
+        return [false, winningArray];
     }
 
     const checkForDraw = () => {
@@ -156,8 +168,12 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
         return currentBoard.every(containsSymbol);
     }
 
-    const printWinner = (winner) => {
+    const printWinner = (winner, winningArray) => {
         document.querySelector("#winner").textContent = `${winner} wins!`;
+        for (coordinate of winningArray) {
+            document.querySelector(`.cell[data-row="${coordinate[0] + 1}"][data-column="${coordinate[1] + 1}"]`)
+            .classList.add("win");
+        }
     }
 
     const printDraw = () => {

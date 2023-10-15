@@ -54,3 +54,6 @@ body {
     border-left: 2px solid black;
 }
 
+.cell.win {
+    color: green;
+}
