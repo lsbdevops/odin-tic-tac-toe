@@ -66,6 +66,9 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
 
     const getActivePlayer = () => activePlayer;
 
+    // Declare AbortController to remove event listeners once round is completed.
+    const removeListeners = new AbortController();
+
     const playRound = () => {
         // Get list of all cells and add a click event listener to each.
         const cellList = document.querySelectorAll(".cell");
@@ -91,14 +94,17 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
                 if (checkForWinner(playerSymbol)) {
                     printWinner(player.getName());
                     player.incrementScore();
+                    removeListeners.abort()
                 }
                 else if (checkForDraw()) {
                     printDraw();
+                    removeListeners.abort()
                 }
-
-                // Change the active player.
-                changePlayerTurn();
-            })
+                else {
+                    // Change the active player to continue the round.
+                    changePlayerTurn();
+                }
+            }, { signal: removeListeners.signal })
         })
     }
 
