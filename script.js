@@ -91,7 +91,10 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
                 if (checkForWinner(playerSymbol)) {
                     printWinner(player.getName());
                     player.incrementScore();
-                };
+                }
+                else if (checkForDraw()) {
+                    printDraw();
+                }
 
                 // Change the active player.
                 changePlayerTurn();
@@ -136,8 +139,23 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
         return isWinner;
     }
 
+    const checkForDraw = () => {
+        // Flatten array so that every method will check each array element.
+        const currentBoard = gameBoard.getBoard().flat();
+
+        // Get boolean for if the corresponding array index contains a value.
+        const containsSymbol = (currentCell) => !!currentCell;
+
+        // Check if all array elements contain a value and return boolean.
+        return currentBoard.every(containsSymbol);
+    }
+
     const printWinner = (winner) => {
         document.querySelector("#winner").textContent = `${winner} wins!`;
+    }
+
+    const printDraw = () => {
+        document.querySelector("#winner").textContent = "Round Drawn!"
     }
 
     return {playRound};
