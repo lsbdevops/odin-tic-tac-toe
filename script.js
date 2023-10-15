@@ -72,12 +72,14 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
 
         cellList.forEach((cell) => {
             cell.addEventListener("click", () => {
-                // Add symbol of active player to the clicked cell. Minus 1 to account for zero indexing of array.
-                const playerSymbol = getActivePlayer().getSymbol();
+                const player = getActivePlayer();
+                const playerSymbol = player.getSymbol();
                 let isMoveValid = false;
 
                 // Confirm player's move is valid before continuing.
                 isMoveValid = gameBoard.addPlayerMove(playerSymbol, cell.dataset.column - 1, cell.dataset.row - 1);
+
+                // Add symbol of active player to the clicked cell. Minus 1 to account for zero indexing of array.
                 if (!isMoveValid) {
                    return;
                 }
@@ -87,8 +89,8 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
                 
                 // Check if the active player has won.
                 if (checkForWinner(playerSymbol)) {
-                    console.log(`${getActivePlayer().getName()} wins!`)
-                    getActivePlayer().incrementScore;
+                    printWinner(player.getName());
+                    player.incrementScore();
                 };
 
                 // Change the active player.
@@ -132,6 +134,10 @@ function gameController(playerOneName = "Player One", playerTwoName = "Player Tw
         }
 
         return isWinner;
+    }
+
+    const printWinner = (winner) => {
+        document.querySelector("#winner").textContent = `${winner} wins!`;
     }
 
     return {playRound};
