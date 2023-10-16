@@ -32,8 +32,19 @@ const gameBoard = function() {
             }
         }
     }
+    
+    const resetBoard = () => {
+        // Loop for each cell of the 3x3 grid.
+        for (let rowN = 0; rowN < 3; rowN++) {
+            for (let columnN = 0; columnN < 3; columnN++)
+            {
+                // Reset each cell on the gameboard to be empty.
+                board[rowN][columnN] = "";
+            }
+        }
+    }
 
-    return {addPlayerMove, printBoard, getBoard};
+    return {addPlayerMove, printBoard, getBoard, resetBoard};
 }()
 
 
@@ -59,7 +70,6 @@ function gameController(playerOneName, playerTwoName) {
 
     // Set initial player's turn.
     let activePlayer = playerOne;
-    let turnDisplay = document.querySelector("#turn");
 
     // Change the active player.
     const changePlayerTurn = () => {
@@ -70,12 +80,12 @@ function gameController(playerOneName, playerTwoName) {
 
     const getActivePlayer = () => activePlayer;
 
-    // Declare AbortController to remove event listeners once round is completed.
-    const removeListeners = new AbortController();
-
     const playRound = () => {
+        // Declare AbortController to remove event listeners once round is completed.
+        const removeListeners = new AbortController();
         // Get list of all cells and add a click event listener to each.
         const cellList = document.querySelectorAll(".cell");
+
 
         cellList.forEach((cell) => {
             cell.addEventListener("click", () => {
@@ -174,6 +184,7 @@ function gameController(playerOneName, playerTwoName) {
     }
 
     const printWinner = (winner, winningArray) => {
+        document.querySelector("#announce-winner").showModal();
         document.querySelector("#winner").textContent = `${winner} wins!`;
         for (coordinate of winningArray) {
             document.querySelector(`.cell[data-row="${coordinate[0] + 1}"][data-column="${coordinate[1] + 1}"]`)
@@ -182,13 +193,40 @@ function gameController(playerOneName, playerTwoName) {
     }
 
     const printDraw = () => {
+        document.querySelector("#announce-winner").showModal();
         document.querySelector("#winner").textContent = "Round Drawn!"
     }
 
     const printScores = () => {
         document.querySelector("#p1-score").textContent = playerOne.getScore();
-        document.querySelector("#p2-score").textContent = playerOne.getScore();
+        document.querySelector("#p2-score").textContent = playerTwo.getScore();
     }
+
+    const resetRound = () => {
+        // Reset the gameboard.
+        gameBoard.resetBoard();
+        gameBoard.printBoard();
+
+        // Reset the colour of winning cells.
+        const cellList = document.querySelectorAll(".cell");
+        cellList.forEach((cell) => {
+            cell.classList.remove("win");
+        })
+
+        // Reset the active player.
+        activePlayer = playerOne;
+        document.querySelector(".player-one").classList.add("active");
+        document.querySelector(".player-two").classList.remove("active");
+
+        // Close dialog box.
+        document.querySelector("#announce-winner").close();
+
+        // Play the next round.
+        playRound();
+    }
+
+    // Add event listener for resetting a round.
+    document.querySelector("#next-round").addEventListener("click", resetRound);
 
     return {playRound};
 }

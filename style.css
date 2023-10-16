@@ -86,7 +86,3 @@ form > ul {
     outline: 3px solid #67e8f9;
     background-color: #f43f5e;
 }
-
-#winner {
-    grid-column: 1 / span 3;
-}
